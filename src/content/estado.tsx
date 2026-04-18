@@ -42,7 +42,7 @@ export default function App() {
 
   return (
     <div style={{ fontFamily: "system-ui", padding: 24 }}>
-      <p style={{ fontSize: 48, margin: 0 }}>{count}</p>
+      <p style={{ fontSize: 48, margin: 0, display: "flex", justifyContent: "center" }}>{count}</p>
       <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
         <button onClick={() => setCount((c) => c + 1)}>+1</button>
         <button onClick={() => setCount((c) => c - 1)}>−1</button>

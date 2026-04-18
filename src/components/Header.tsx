@@ -7,10 +7,11 @@ export function Header() {
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line)] px-6">
       <a
-        href="#useState"
+        href="#"
+        onClick={(e) => { e.preventDefault(); window.location.hash = "" }}
         className="flex items-center gap-2 text-[14px] text-[var(--color-fg)] hover:text-[var(--color-fg-muted)] transition-colors"
       >
-        <Logo className="h-[17px] w-[17px]" />
+        <Logo className="h-[16px] w-auto" />
         <span>react learn</span>
       </a>
       <div className="flex items-center gap-5">

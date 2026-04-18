@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const DEFAULT_ROUTE = "useState"
+const DEFAULT_ROUTE = ""
 
 function readHash() {
   if (typeof window === "undefined") return DEFAULT_ROUTE
