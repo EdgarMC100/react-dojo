@@ -5,6 +5,7 @@ import {
   Hourglass,
   Component,
   Dumbbell,
+  MessageCircleQuestion,
 } from "lucide-react"
 import type { ComponentType } from "react"
 import { cn } from "@/lib/utils"
@@ -24,6 +25,7 @@ const categoryIcon: Record<string, IconC> = {
   rendimiento: Gauge,
   concurrencia: Hourglass,
   composicion: Component,
+  entrevistas: MessageCircleQuestion,
 }
 
 const difficultyDots: Record<Difficulty, number> = {
