@@ -47,8 +47,8 @@ export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
         ))}
       </div>
 
-      {/* Playground */}
-      <div className="mt-12">{concept.playground}</div>
+      {/* Playground — rompe el contenedor para usar más ancho */}
+      <div className="mt-12 -mx-8 md:-mx-12 lg:-mx-24">{concept.playground}</div>
 
       {/* Pitfalls */}
       {concept.pitfalls && concept.pitfalls.length > 0 && (
@@ -56,10 +56,15 @@ export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
           <h2 className="mb-4 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
             Tropiezos comunes
           </h2>
-          <ul className="space-y-3">
+          <ul className="rounded-lg border border-[var(--color-line)] overflow-hidden">
             {concept.pitfalls.map((p, i) => (
-              <li key={i} className="flex gap-3 rounded-md border border-[var(--color-line)] px-4 py-3 text-[14px] leading-[1.6] text-[var(--color-fg-muted)]">
-                <span className="mt-[2px] shrink-0 text-[var(--color-fg-dim)]">!</span>
+              <li
+                key={i}
+                className="flex gap-4 px-5 py-4 text-[14px] leading-[1.65] text-[var(--color-fg-muted)] [&:not(:last-child)]:border-b [&:not(:last-child)]:border-[var(--color-line)]"
+              >
+                <span className="mt-[1px] shrink-0 font-mono text-[11px] text-[var(--color-fg-faint)] w-4 text-right">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <span>{p}</span>
               </li>
             ))}

@@ -14,4 +14,6 @@ export interface Exercise {
   solution: SandpackFiles
   /** IDs de conceptos relacionados (enlazan a las páginas de concepto) */
   relatedConcepts?: string[]
+  /** Dependencias npm extra para el Playground (ej. react 19) */
+  dependencies?: Record<string, string>
 }

@@ -227,4 +227,175 @@ export default function App() {
       "Si necesitas reaccionar a un cambio, necesitas estado, no una ref.",
     ],
   },
+  {
+    id: "useOptimistic",
+    label: "useOptimistic",
+    kicker: "Hook · React 19",
+    title: "UI optimista sin bloquear",
+    lede: "useOptimistic muestra un estado provisional mientras una operación async está en curso. La UI responde al instante; si la operación falla sin actualizar el estado real, React revierte automáticamente.",
+    sections: [
+      {
+        heading: "La firma",
+        body: (
+          <p>
+            <code>{"const [optimisticState, addOptimistic] = useOptimistic(state, updateFn)"}</code>. <em>state</em> es el real; <em>updateFn</em> describe cómo calcular el estado provisional a partir de él y un valor temporal.
+          </p>
+        ),
+      },
+      {
+        heading: "Cuándo usarlo",
+        body: (
+          <p>
+            Acciones que casi siempre tienen éxito: likes, votos, mensajes enviados, arrastrar y soltar. No lo uses cuando el fallo sea frecuente o costoso de deshacer visualmente.
+          </p>
+        ),
+      },
+    ],
+    playground: (
+      <Playground
+        dependencies={{ react: "^19.0.0", "react-dom": "^19.0.0" }}
+        files={{
+          "/App.js": `import { useState, useOptimistic, useTransition } from "react";
+
+async function sendMessage(text) {
+  await new Promise(r => setTimeout(r, 900));
+  if (Math.random() < 0.2) throw new Error("Error de red");
+  return { id: Date.now(), text };
+}
+
+export default function App() {
+  const [messages, setMessages] = useState([{ id: 1, text: "Hola 👋" }]);
+  const [optimisticMsgs, addOptimistic] = useOptimistic(
+    messages,
+    (prev, text) => [...prev, { id: Date.now(), text, pending: true }]
+  );
+  const [error, setError] = useState(null);
+  const [, startTransition] = useTransition();
+
+  function handleSend(e) {
+    e.preventDefault();
+    const text = e.target.msg.value.trim();
+    if (!text) return;
+    e.target.reset();
+    setError(null);
+
+    startTransition(async () => {
+      addOptimistic(text);
+      try {
+        const saved = await sendMessage(text);
+        setMessages(prev => [...prev, saved]);
+      } catch {
+        setError("Falló el envío. Reintenta.");
+      }
+    });
+  }
+
+  return (
+    <div style={{ padding: 24, maxWidth: 360 }}>
+      <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+        {optimisticMsgs.map((m, i) => (
+          <li key={m.id ?? i} style={{
+            padding: "5px 0",
+            color: m.pending ? "var(--fg-muted)" : "var(--fg)",
+            fontStyle: m.pending ? "italic" : "normal",
+            fontSize: 13,
+          }}>
+            {m.pending ? "⏳ " : "✓ "}{m.text}
+          </li>
+        ))}
+      </ul>
+      {error && <p style={{ color: "#c87474", fontSize: 12, marginBottom: 8 }}>{error}</p>}
+      <form onSubmit={handleSend} style={{ display: "flex", gap: 8 }}>
+        <input name="msg" placeholder="Escribe un mensaje..." style={{ flex: 1 }} />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  );
+}
+`,
+        }}
+      />
+    ),
+    pitfalls: [
+      "El estado optimista es temporal — React lo descarta en cuanto el estado real se actualiza.",
+      "Si el async falla sin actualizar el estado real, React revierte al original automáticamente.",
+      "useOptimistic requiere que la mutación esté dentro de una transition o action async.",
+    ],
+  },
+  {
+    id: "useActionState",
+    label: "useActionState",
+    kicker: "Hook · React 19",
+    title: "Estado desde una acción de formulario",
+    lede: "useActionState conecta una acción async a un estado local. Recibe la función action y un estado inicial; devuelve el estado actual, la action lista para usar como atributo del form, y un flag isPending.",
+    sections: [
+      {
+        heading: "La firma",
+        body: (
+          <p>
+            <code>{"const [state, formAction, isPending] = useActionState(fn, initial)"}</code>. La <em>fn</em> recibe el estado anterior y el <code>FormData</code>, y retorna el nuevo estado — sync o async.
+          </p>
+        ),
+      },
+      {
+        heading: "Sin useState extra",
+        body: (
+          <p>
+            A diferencia del patrón clásico <em>onSubmit + useState</em>, useActionState centraliza el flujo: un solo lugar maneja lógica, estado y pending. Funciona con y sin JS habilitado (progressive enhancement).
+          </p>
+        ),
+      },
+    ],
+    playground: (
+      <Playground
+        dependencies={{ react: "^19.0.0", "react-dom": "^19.0.0" }}
+        files={{
+          "/App.js": `import { useActionState } from "react";
+
+async function submitContact(prev, formData) {
+  await new Promise(r => setTimeout(r, 900));
+  const name = formData.get("name")?.trim();
+  const email = formData.get("email")?.trim();
+  if (!name || !email) return { error: "Todos los campos son obligatorios." };
+  if (!email.includes("@")) return { error: "Email inválido." };
+  return { ok: true, name };
+}
+
+export default function App() {
+  const [state, formAction, isPending] = useActionState(submitContact, null);
+
+  if (state?.ok) {
+    return (
+      <div style={{ padding: 24 }}>
+        <p>✅ Gracias, <strong>{state.name}</strong>. Te contactaremos pronto.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: 24, maxWidth: 320 }}>
+      <h3 style={{ margin: "0 0 16px", fontSize: 15 }}>Contacto</h3>
+      <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <input name="name" placeholder="Nombre" disabled={isPending} />
+        <input name="email" placeholder="Email" disabled={isPending} />
+        {state?.error && (
+          <p style={{ color: "#c87474", fontSize: 12, margin: 0 }}>{state.error}</p>
+        )}
+        <button type="submit" disabled={isPending}>
+          {isPending ? "Enviando..." : "Enviar"}
+        </button>
+      </form>
+    </div>
+  );
+}
+`,
+        }}
+      />
+    ),
+    pitfalls: [
+      "La action recibe el estado ANTERIOR como primer argumento — no olvides retornar el nuevo estado en cada rama.",
+      "isPending se activa en cuanto se dispara la action y se desactiva cuando resuelve.",
+      "No mezcles useActionState con onSubmit en el mismo form — elige uno u otro.",
+    ],
+  },
 ]

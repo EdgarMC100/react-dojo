@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Lightbulb, BookOpen } from "lucide-react"
 import { Playground } from "@/components/Playground"
 import { navigate } from "@/hooks/useHashRoute"
 import { cn } from "@/lib/utils"
@@ -20,7 +21,7 @@ export function ExercisePage({ exercise, prev, next }: ExercisePageProps) {
   const [showSolution, setShowSolution] = useState(false)
 
   return (
-    <article className="mx-auto max-w-[720px] px-8 py-20 md:px-12 md:py-28">
+    <article className="mx-auto max-w-[1000px] px-8 py-20 md:px-12 md:py-28">
       {/* Kicker */}
       <div className="mb-4 flex items-center gap-3 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
         <span>práctica</span>
@@ -78,6 +79,7 @@ export function ExercisePage({ exercise, prev, next }: ExercisePageProps) {
         <Playground
           key={`${exercise.id}-${showSolution ? "sol" : "start"}`}
           files={showSolution ? exercise.solution : exercise.starter}
+          dependencies={exercise.dependencies}
         />
       </section>
 
@@ -86,7 +88,7 @@ export function ExercisePage({ exercise, prev, next }: ExercisePageProps) {
         <section className="mt-8">
           <details className="group">
             <summary className="cursor-pointer select-none text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)] hover:text-[var(--color-fg)] transition-colors list-none flex items-center gap-2">
-              <span className="transition-transform group-open:rotate-90">›</span>
+              <Lightbulb className="h-[13px] w-[13px]" strokeWidth={1.8} />
               <span>Pista</span>
             </summary>
             <p className="mt-3 rounded-md border border-[var(--color-line)] px-4 py-3 text-[14px] leading-[1.65] text-[var(--color-fg-muted)]">
@@ -99,7 +101,8 @@ export function ExercisePage({ exercise, prev, next }: ExercisePageProps) {
       {/* Conceptos relacionados */}
       {exercise.relatedConcepts && exercise.relatedConcepts.length > 0 && (
         <section className="mt-10">
-          <h3 className="mb-3 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
+          <h3 className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
+            <BookOpen className="h-[13px] w-[13px]" strokeWidth={1.8} />
             Conceptos relacionados
           </h3>
           <div className="flex flex-wrap gap-2">

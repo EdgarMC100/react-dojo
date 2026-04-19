@@ -20,7 +20,7 @@ type IconC = ComponentType<{ className?: string; strokeWidth?: number }>
 
 const categoryIcon: Record<string, IconC> = {
   estado: Boxes,
-  efectos: RefreshCw,
+  sincronizacion: RefreshCw,
   rendimiento: Gauge,
   concurrencia: Hourglass,
   composicion: Component,

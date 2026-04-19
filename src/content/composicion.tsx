@@ -303,4 +303,92 @@ export default function App() {
       "Llamar useId N veces dentro de un mismo componente da N IDs distintos — preferible concatenar sufijos.",
     ],
   },
+  {
+    id: "useFormStatus",
+    label: "useFormStatus",
+    kicker: "Hook · React 19 · react-dom",
+    title: "Leer el estado del form desde un hijo",
+    lede: "useFormStatus lee el estado del formulario más cercano en el árbol: si está pendiente, qué datos envió y con qué método. Permite crear componentes reutilizables sin prop drilling.",
+    sections: [
+      {
+        heading: "Regla de uso",
+        body: (
+          <p>
+            Debe llamarse desde un componente <em>hijo</em> del <code>&lt;form&gt;</code>, no desde el mismo componente que lo renderiza. Es el patrón inverso a pasar <code>isPending</code> como prop.
+          </p>
+        ),
+      },
+      {
+        heading: "Qué expone",
+        body: (
+          <p>
+            <code>{"{ pending, data, method, action }"}</code>. <em>pending</em> es el flag más usado. <em>data</em> es el <code>FormData</code> en vuelo — útil para mostrar un preview del valor mientras espera.
+          </p>
+        ),
+      },
+    ],
+    playground: (
+      <Playground
+        dependencies={{ react: "^19.0.0", "react-dom": "^19.0.0" }}
+        files={{
+          "/App.js": `import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+
+async function saveUsername(prev, formData) {
+  await new Promise(r => setTimeout(r, 1000));
+  const username = formData.get("username")?.trim();
+  if (!username) return { error: "El nombre no puede estar vacío." };
+  if (username.length < 3) return { error: "Mínimo 3 caracteres." };
+  return { saved: username };
+}
+
+// Este componente HIJO puede leer el estado del form sin props
+function SubmitButton() {
+  const { pending, data } = useFormStatus();
+  const preview = data?.get("username");
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <button type="submit" disabled={pending}>
+        {pending ? "Guardando..." : "Guardar"}
+      </button>
+      {pending && preview && (
+        <span style={{ fontSize: 12, color: "var(--fg-muted)", fontStyle: "italic" }}>
+          guardando "{preview}"...
+        </span>
+      )}
+    </div>
+  );
+}
+
+export default function App() {
+  const [state, formAction] = useActionState(saveUsername, null);
+  return (
+    <div style={{ padding: 24, maxWidth: 320 }}>
+      <h3 style={{ margin: "0 0 12px", fontSize: 15 }}>Editar perfil</h3>
+      {state?.saved && (
+        <p style={{ fontSize: 13, marginBottom: 12 }}>
+          ✅ Guardado como <strong>@{state.saved}</strong>
+        </p>
+      )}
+      <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <input name="username" placeholder="Nombre de usuario"
+          defaultValue={state?.saved ?? ""} />
+        {state?.error && (
+          <p style={{ color: "#c87474", fontSize: 12, margin: 0 }}>{state.error}</p>
+        )}
+        <SubmitButton />
+      </form>
+    </div>
+  );
+}
+`,
+        }}
+      />
+    ),
+    pitfalls: [
+      "useFormStatus no funciona en el componente que renderiza el form — debe estar en un hijo.",
+      "Solo tiene acceso al form del cual es descendiente directo, no a forms hermanos o anidados.",
+      "Importar desde 'react-dom', no desde 'react'.",
+    ],
+  },
 ]

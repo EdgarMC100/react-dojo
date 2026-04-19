@@ -112,7 +112,7 @@ function HeavyList({ query }) {
     }
     // simula trabajo extra
     let x = 0;
-    for (let i = 0; i < 1_500_000; i++) x += i;
+    for (let i = 0; i < 80_000; i++) x += i;
     return result;
   }, [query]);
 

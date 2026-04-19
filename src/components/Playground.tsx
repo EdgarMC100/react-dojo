@@ -183,7 +183,7 @@ export function Playground({
   files,
   template = "react",
   showConsole = false,
-  height = 540,
+  height = 650,
   dependencies,
 }: PlaygroundProps) {
   const { theme } = useTheme()
@@ -256,7 +256,7 @@ export function Playground({
             showConsole,
             showConsoleButton: true,
             editorHeight,
-            editorWidthPercentage: 55,
+            editorWidthPercentage: 65,
           }}
         />
       </div>

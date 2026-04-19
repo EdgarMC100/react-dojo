@@ -153,4 +153,95 @@ export default function App() {
       "Para la mayoría de casos, useEffect basta. No prematuramente uses esta variante.",
     ],
   },
+  {
+    id: "useEffectEvent",
+    label: "useEffectEvent",
+    kicker: "Hook · Experimental",
+    title: "Lógica no reactiva dentro de efectos",
+    lede: "useEffectEvent extrae lógica que debe correr dentro de un efecto pero no debe dispararlo de nuevo cuando cambia. Rompe la tensión entre 'necesito leer este valor' y 'no quiero que el efecto dependa de él'.",
+    sections: [
+      {
+        heading: "El problema",
+        body: (
+          <p>
+            Un efecto que abre una conexión no debe re-abrirla cada vez que cambia el mensaje de log — pero si usas el log dentro del efecto, React exige que lo incluyas en las dependencias y eso causa reconexiones innecesarias.
+          </p>
+        ),
+      },
+      {
+        heading: "La solución",
+        body: (
+          <p>
+            Envuelve la lógica no reactiva en un <code>useEffectEvent</code>. La función resultante puede llamarse desde el efecto sin ser una dependencia de él. Aún experimental en React 19: importar como <code>experimental_useEffectEvent</code>.
+          </p>
+        ),
+      },
+    ],
+    playground: (
+      <Playground
+        dependencies={{ react: "^19.0.0", "react-dom": "^19.0.0" }}
+        files={{
+          "/App.js": `import { useState, useEffect, experimental_useEffectEvent as useEffectEvent } from "react";
+
+function createConnection(url) {
+  return {
+    connect() { console.log("✅ conectado a " + url); },
+    disconnect() { console.log("❌ desconectado de " + url); },
+  };
+}
+
+function ChatRoom({ roomUrl, theme }) {
+  // onConnected lee 'theme' pero no es una dependencia del efecto
+  const onConnected = useEffectEvent(() => {
+    console.log("tema al conectar:", theme);
+  });
+
+  useEffect(() => {
+    const conn = createConnection(roomUrl);
+    conn.connect();
+    onConnected();
+    return () => conn.disconnect();
+  }, [roomUrl]); // solo roomUrl — cambiar theme no reconecta
+
+  return (
+    <p style={{ fontFamily: "monospace", fontSize: 13 }}>
+      sala: <strong>{roomUrl}</strong> · tema: {theme}
+    </p>
+  );
+}
+
+export default function App() {
+  const [room, setRoom] = useState("general");
+  const [theme, setTheme] = useState("oscuro");
+  return (
+    <div style={{ padding: 24 }}>
+      <p style={{ fontSize: 12, color: "var(--fg-muted)", marginBottom: 12 }}>
+        Abre la consola. Cambiar tema no reconecta; cambiar sala sí.
+      </p>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        {["general", "soporte", "random"].map(r => (
+          <button key={r} onClick={() => setRoom(r)}
+            style={{ fontWeight: room === r ? "bold" : "normal" }}>{r}</button>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        {["oscuro", "claro"].map(t => (
+          <button key={t} onClick={() => setTheme(t)}
+            style={{ fontWeight: theme === t ? "bold" : "normal" }}>{t}</button>
+        ))}
+      </div>
+      <ChatRoom roomUrl={room} theme={theme} />
+    </div>
+  );
+}
+`,
+        }}
+      />
+    ),
+    pitfalls: [
+      "useEffectEvent es experimental — importar como experimental_useEffectEvent. La API puede cambiar sin aviso.",
+      "No pases la función del evento como prop ni la retornes desde un hook — úsala solo dentro del efecto.",
+      "No la llames fuera de un efecto; está diseñada exclusivamente para ese contexto.",
+    ],
+  },
 ]
