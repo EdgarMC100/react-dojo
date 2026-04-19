@@ -3,7 +3,7 @@ export function Footer() {
     <footer className="shrink-0 border-t border-(--color-line) flex items-center justify-center h-9">
       <p className="text-[11px] text-(--color-fg-faint) tracking-wide select-none">
         Made with{" "}
-        <span className="text-(--color-fg-dim)">♥</span>
+        <span className="text-red-500">♥</span>
         {" "}by{" "}
         <a
           href="https://github.com/drbarzaga"
