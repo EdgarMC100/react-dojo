@@ -32,7 +32,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
         onClick={(e) => { e.preventDefault(); window.location.hash = "" }}
         className="flex items-center gap-2 text-[14px] text-[var(--color-fg)] hover:text-[var(--color-fg-muted)] transition-colors"
       >
-        <Logo className="h-[20px] w-auto" />
+        <Logo className="h-[32px] w-auto" />
         <span className="font-mono">React Dojo</span>
       </a>
 

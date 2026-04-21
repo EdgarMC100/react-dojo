@@ -10,7 +10,7 @@ export function WelcomePage() {
       <div className="flex flex-col items-center text-center max-w-[420px]">
 
         {/* Logo */}
-        <Logo className="mb-8 h-8 w-auto" />
+        <Logo className="mb-6 h-24 w-auto" />
 
         {/* Title */}
         <h1 className="font-mono text-[30px] font-medium leading-none text-[var(--color-fg)]">
