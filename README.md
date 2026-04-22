@@ -24,4 +24,3 @@ npm run dev
 |---|---|
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Build de producción |
-| `npm run og` | Regenerar OG image |
