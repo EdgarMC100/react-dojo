@@ -1,7 +1,12 @@
+"use client"
+
 import { useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
+import { TriangleAlert } from "lucide-react"
 import { type Concept } from "@/content/concepts"
-import { navigate } from "@/hooks/useHashRoute"
 import { useProgress } from "@/hooks/useProgress"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 
 interface ConceptPageProps {
   concept: Concept
@@ -10,6 +15,7 @@ interface ConceptPageProps {
 }
 
 export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
+  const router = useRouter()
   const { markConceptVisited } = useProgress()
   const bottomRef = useRef<HTMLElement>(null)
 
@@ -25,10 +31,12 @@ export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
   }, [concept.id, markConceptVisited])
 
   return (
-    <article className="mx-auto max-w-[720px] px-8 py-20 md:px-12 md:py-28">
+    <article className="mx-auto max-w-[1000px] px-5 py-10 md:px-12 md:py-20">
       {/* Kicker */}
-      <div className="mb-4 flex items-center gap-3 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
-        <span>{concept.kicker}</span>
+      <div className="mb-4">
+        <Badge variant="outline" className="font-mono text-[11px] tracking-widest text-[var(--color-fg-dim)] border-[var(--color-line-strong)]">
+          {concept.kicker}
+        </Badge>
       </div>
 
       {/* Hook name */}
@@ -46,8 +54,7 @@ export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
         {concept.lede}
       </p>
 
-      {/* Divider */}
-      <hr className="mt-12 border-none border-t border-[var(--color-line)]" />
+      <Separator className="mt-12 bg-[var(--color-line)]" />
 
       {/* Sections */}
       <div className="mt-10 space-y-10">
@@ -63,13 +70,14 @@ export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
         ))}
       </div>
 
-      {/* Playground — rompe el contenedor para usar más ancho */}
+      {/* Playground */}
       <div className="mt-12 -mx-8 md:-mx-12 lg:-mx-24">{concept.playground}</div>
 
       {/* Pitfalls */}
       {concept.pitfalls && concept.pitfalls.length > 0 && (
         <section className="mt-14">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
+          <h2 className="mb-4 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
+            <TriangleAlert className="h-[13px] w-[13px] text-yellow-400" strokeWidth={2} />
             Tropiezos comunes
           </h2>
           <ul className="rounded-lg border border-[var(--color-line)] overflow-hidden">
@@ -92,8 +100,8 @@ export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
       <nav ref={bottomRef} className="mt-24 flex items-start justify-between gap-8 border-t border-[var(--color-line)] pt-8 text-[14px]">
         {prev ? (
           <a
-            href={`#${prev.id}`}
-            onClick={(e) => { e.preventDefault(); navigate(prev.id) }}
+            href={`/${prev.id}`}
+            onClick={(e) => { e.preventDefault(); router.push(`/${prev.id}`) }}
             className="group flex flex-col gap-1 text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] transition-colors"
           >
             <span className="text-[12px] text-[var(--color-fg-dim)]">← anterior</span>
@@ -102,8 +110,8 @@ export function ConceptPage({ concept, prev, next }: ConceptPageProps) {
         ) : <span />}
         {next ? (
           <a
-            href={`#${next.id}`}
-            onClick={(e) => { e.preventDefault(); navigate(next.id) }}
+            href={`/${next.id}`}
+            onClick={(e) => { e.preventDefault(); router.push(`/${next.id}`) }}
             className="group flex flex-col items-end gap-1 text-right text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] transition-colors"
           >
             <span className="text-[12px] text-[var(--color-fg-dim)]">siguiente →</span>

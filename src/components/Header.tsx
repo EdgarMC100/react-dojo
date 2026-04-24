@@ -1,8 +1,12 @@
+"use client"
+
 import { useRef, useState } from "react"
-import { Search } from "lucide-react"
+import { Search, Star } from "lucide-react"
 import { useTheme } from "@/hooks/useTheme"
 import { useEditorTheme, EDITOR_THEMES_META, type EditorThemeId } from "@/hooks/useEditorTheme"
+import { useGitHubStars } from "@/hooks/useGitHubStars"
 import { Logo } from "@/components/Logo"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 interface HeaderProps {
   onSearchOpen?: () => void
 }
@@ -10,6 +14,7 @@ interface HeaderProps {
 export function Header({ onSearchOpen }: HeaderProps) {
   const { theme, toggle } = useTheme()
   const { editorTheme, setEditorTheme } = useEditorTheme()
+  const stars = useGitHubStars("drbarzaga/react-dojo")
   const [pickerOpen, setPickerOpen] = useState(false)
   const pickerRef = useRef<HTMLDivElement>(null)
 
@@ -25,70 +30,71 @@ export function Header({ onSearchOpen }: HeaderProps) {
   }
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line)] px-6">
-      <a
-        href="#"
-        onClick={(e) => { e.preventDefault(); window.location.hash = "" }}
-        className="flex items-center gap-2 text-[14px] text-[var(--color-fg)] hover:text-[var(--color-fg-muted)] transition-colors"
-      >
-        <Logo className="h-[32px] w-auto" />
-        <span className="font-mono">React Dojo</span>
-      </a>
+    <header className="relative z-20 flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line)] bg-[var(--color-bg)] px-3 md:px-6">
+      <div className="flex items-center gap-2">
+        {/* Hamburger — solo mobile */}
+        <SidebarTrigger className="md:hidden text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:bg-[var(--color-bg-hover)]" />
 
-      <div className="flex items-center gap-5">
+        <a
+          href="/"
+          className="flex items-center gap-2 text-[14px] text-[var(--color-fg)] hover:text-[var(--color-fg-muted)] transition-colors"
+        >
+          <Logo className="h-[28px] w-auto" />
+          <span className="font-mono hidden sm:inline">React Dojo</span>
+        </a>
+      </div>
+
+      <div className="flex items-center gap-2 md:gap-3">
+        {/* Búsqueda móvil — solo ícono */}
+        <button
+          type="button"
+          onClick={onSearchOpen}
+          aria-label="Buscar"
+          className="sm:hidden grid h-7 w-7 place-items-center rounded-md text-[var(--color-fg-muted)] transition-colors hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-fg)]"
+        >
+          <Search className="h-[15px] w-[15px]" strokeWidth={1.8} />
+        </button>
         {/* Search trigger */}
         <button
           type="button"
           onClick={onSearchOpen}
-          className="hidden sm:flex w-52 items-center gap-2 rounded-md py-1 pl-3 pr-2 text-[12px] transition-colors"
+          className="hidden sm:flex w-52 items-center gap-2 rounded-lg py-1.5 pl-3 pr-2 text-[12px] text-[var(--color-fg-dim)] transition-all hover:text-[var(--color-fg-muted)]"
           style={theme === "light"
-            ? { background: "#fff", border: "1px solid rgba(0,0,0,0.15)", color: "#a29f97" }
-            : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#5c5c61" }
+            ? { background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.1)" }
+            : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }
           }
         >
           <Search className="h-[12px] w-[12px] shrink-0" strokeWidth={1.8} />
-          <span className="flex-1 text-left">Buscar…</span>
+          <span className="flex-1 text-left font-mono">Buscar…</span>
           <kbd
-            className="shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px]"
+            className="shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] leading-4"
             style={theme === "light"
-              ? { background: "rgba(0,0,0,0.06)", border: "1px solid rgba(0,0,0,0.1)", color: "#a29f97" }
-              : { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)", color: "#5c5c61" }
+              ? { background: "rgba(0,0,0,0.05)", borderColor: "rgba(0,0,0,0.12)", color: "#a29f97" }
+              : { background: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.1)", color: "#5c5c61" }
             }
           >
             ⌘K
           </kbd>
         </button>
 
-        <a
-          href="https://react.dev"
-          target="_blank"
-          rel="noreferrer"
-          className="group flex items-center gap-1 text-[13px] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] transition-colors"
-        >
-          <span>⚛️ react.dev</span>
-          <span aria-hidden className="text-[11px] leading-none translate-y-[-0.5px] transition-transform group-hover:translate-x-[1px] group-hover:translate-y-[-1.5px]">↗</span>
-        </a>
-
-        <a
-          href="https://github.com/drbarzaga/react-dojo"
-          target="_blank"
-          rel="noreferrer"
-          className="group flex items-center gap-1 text-[13px] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] transition-colors"
-        >
-          <span>⭐ GitHub</span>
-          <span aria-hidden className="text-[11px] leading-none translate-y-[-0.5px] transition-transform group-hover:translate-x-[1px] group-hover:translate-y-[-1.5px]">↗</span>
-        </a>
-
-        <a
-          href="https://github.com/drbarzaga/react-learn/issues/new"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Reportar un error"
-          title="Reportar un error"
-          className="grid h-7 w-7 place-items-center rounded-md text-[var(--color-fg-muted)] transition-colors hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-fg)]"
-        >
-          <BugIcon className="h-[15px] w-[15px]" />
-        </a>
+        <div className="flex items-center gap-1 ml-1">
+          {/* GitHub + estrellas */}
+          <a
+            href="https://github.com/drbarzaga/react-dojo"
+            target="_blank"
+            rel="noreferrer"
+            title="GitHub"
+            className="flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] text-[var(--color-fg-muted)] transition-colors hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-fg)]"
+          >
+            <GitHubIcon className="h-[14px] w-[14px] shrink-0" />
+            {stars !== null && (
+              <span className="flex items-center gap-1">
+                <Star className="h-[10px] w-[10px] fill-yellow-400 text-yellow-400" />
+                <span className="font-mono">{stars >= 1000 ? `${(stars / 1000).toFixed(1)}k` : stars}</span>
+              </span>
+            )}
+          </a>
+        </div>
 
         {/* Editor theme picker */}
         <div ref={pickerRef} className="relative" onBlur={handlePickerBlur}>
@@ -170,6 +176,14 @@ function MoonIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  )
+}
+
+function GitHubIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
     </svg>
   )
 }

@@ -1,3 +1,5 @@
+"use client"
+
 import {
   createContext,
   useCallback,
@@ -29,6 +31,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
+    document.documentElement.classList.toggle("dark", theme === "dark")
     try {
       localStorage.setItem("theme", theme)
     } catch {

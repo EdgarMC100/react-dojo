@@ -2,36 +2,96 @@
   <img src="./public/og-image.png" alt="React Dojo" width="600" />
 </p>
 
-# React Dojo
-
-Learn React by doing.
-
-Each concept includes a clear explanation, an interactive playground, and real-world coding exercises — no shortcuts, just practice.
-
-https://react-dojo.vercel.app
+<h2 align="center">Simple way to learn React: read, edit, run.</h2>
 
 ---
 
-## Features
-
-- Clear, focused explanations of core React concepts  
-- Interactive playgrounds powered by Sandpack  
-- Hands-on exercises with real code  
-- Fast, minimal experience  
+React Dojo is an interactive reference for React. Each concept comes with a focused explanation, a live playground where you can edit and run code directly in the browser, and real coding exercises — no shortcuts, just practice.
 
 ---
 
-## Tech Stack
 
-- React 19 + TypeScript  
-- Vite  
-- Tailwind CSS v4  
-- Sandpack  
-
----
-
-## Getting Started
+## Installation
 
 ```bash
-npm install
-npm run dev
+# Clone the repo
+git clone https://github.com/drbarzaga/react-dojo.git
+cd react-dojo
+
+# Install dependencies
+bun install
+
+# Start the dev server
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+```bash
+# Build for production
+bun run build
+
+# Start production server
+bun start
+```
+
+---
+
+## Structure
+
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── [concept]/          # Concept pages (useState, useEffect, …)
+│   ├── learn/[exercise]/   # Exercise pages
+│   ├── quiz/[id]/          # Quiz pages
+│   ├── layout.tsx          # Root layout
+│   └── globals.css         # Global styles
+├── components/             # UI components
+│   ├── ui/                 # shadcn/ui primitives
+│   ├── ConceptPage.tsx
+│   ├── ExercisePage.tsx
+│   ├── Playground.tsx      # Sandpack wrapper
+│   └── …
+├── content/                # All concepts, exercises and quizzes
+│   ├── concepts.ts
+│   ├── efectos.tsx
+│   ├── exercises/
+│   └── quiz.ts
+└── hooks/                  # Custom React hooks
+```
+
+---
+
+## Contribute
+
+Contributions are welcome. If you find a bug or want to add a concept, exercise, or quiz:
+
+1. Fork the repository
+2. Create a branch: `git checkout -b feat/my-feature`
+3. Make your changes and commit
+4. Open a pull request
+
+For bugs or ideas, [open an issue](https://github.com/drbarzaga/react-dojo/issues/new).
+
+---
+
+## License
+
+MIT © [Dayan Perez](https://github.com/drbarzaga)
+
+---
+
+## Contributors
+
+<a href="https://github.com/drbarzaga/react-dojo/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=drbarzaga/react-dojo" alt="Contributors" />
+</a>
+
+---
+
+## Star History
+
+<a href="https://star-history.com/#drbarzaga/react-dojo&Date">
+  <img src="https://api.star-history.com/svg?repos=drbarzaga/react-dojo&type=Date&theme=dark" alt="Star History Chart" />
+</a>

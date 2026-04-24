@@ -1,7 +1,9 @@
+"use client"
+
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import confetti from "canvas-confetti"
 import { cn } from "@/lib/utils"
-import { navigate } from "@/hooks/useHashRoute"
 import type { Quiz } from "@/content/quiz"
 import { allQuizzes } from "@/content/quiz"
 import { useProgress } from "@/hooks/useProgress"
@@ -40,7 +42,10 @@ function clearSession(id: string) {
 }
 
 export function QuizPage({ quiz }: QuizPageProps) {
+  const router = useRouter()
   const initial = loadSession(quiz.id)
+  const [browsing, setBrowsing] = useState(true)
+  const [hasProgress, setHasProgress] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(initial.currentIndex)
   const [selected, setSelected] = useState<number | null>(initial.selected)
   const [score, setScore] = useState(initial.score)
@@ -50,6 +55,11 @@ export function QuizPage({ quiz }: QuizPageProps) {
   const question = quiz.questions[currentIndex]
   const total = quiz.questions.length
   const answered = selected !== null
+
+  useEffect(() => {
+    const session = loadSession(quiz.id)
+    setHasProgress(session.currentIndex > 0 || session.selected !== null || session.finished)
+  }, [quiz.id])
 
   useEffect(() => {
     saveSession(quiz.id, { currentIndex, selected, score, finished })
@@ -76,6 +86,14 @@ export function QuizPage({ quiz }: QuizPageProps) {
     setSelected(null)
     setScore(0)
     setFinished(false)
+    setHasProgress(false)
+    setBrowsing(true)
+  }
+
+  function startQuiz() {
+    setCurrentIndex(0)
+    setSelected(null)
+    setBrowsing(false)
   }
 
   useEffect(() => {
@@ -87,10 +105,76 @@ export function QuizPage({ quiz }: QuizPageProps) {
     }
   }, [finished, quiz.id, score, total, saveQuizScore])
 
+  /* ── Browse mode ── */
+  if (browsing) {
+    return (
+      <article className="mx-auto max-w-[1000px] px-5 py-10 md:px-12 md:py-20">
+        {/* Header */}
+        <div className="mb-2 flex items-start justify-between gap-4">
+          <div>
+            <p className="mb-1 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">Quiz</p>
+            <h1 className="font-mono text-[28px] font-medium leading-none text-[var(--color-fg)]">
+              {quiz.label}
+            </h1>
+          </div>
+          <span className="mt-1 shrink-0 font-mono text-[13px] tabular-nums text-[var(--color-fg-dim)]">
+            {total} preguntas
+          </span>
+        </div>
+
+        <p className="mb-10 mt-4 text-[15px] leading-[1.6] text-[var(--color-fg-muted)]">
+          {quiz.description}
+        </p>
+
+        {/* Question list — read-only preview */}
+        <div className="space-y-2">
+          {quiz.questions.map((q, i) => (
+            <div
+              key={q.id}
+              className="flex items-baseline gap-4 rounded-lg border border-[var(--color-line)] bg-[var(--color-bg-raise)] px-5 py-4 text-[14px] leading-[1.55] text-[var(--color-fg-muted)]"
+            >
+              <span className="shrink-0 font-mono text-[11px] text-[var(--color-fg-faint)]">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>{q.question}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-[var(--color-line)] pt-8">
+          <button
+            onClick={startQuiz}
+            className="rounded-md bg-[var(--color-fg)] px-5 py-2.5 text-[14px] font-medium text-[var(--color-bg)] transition-opacity hover:opacity-80"
+          >
+            Comenzar →
+          </button>
+          {hasProgress && !finished && (
+            <button
+              onClick={() => setBrowsing(false)}
+              className="rounded-md border border-[var(--color-line)] px-4 py-2.5 text-[14px] text-[var(--color-fg-muted)] transition-colors hover:border-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+            >
+              Continuar donde lo dejé
+            </button>
+          )}
+          {finished && (
+            <button
+              onClick={handleRestart}
+              className="rounded-md border border-[var(--color-line)] px-4 py-2.5 text-[14px] text-[var(--color-fg-muted)] transition-colors hover:border-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+            >
+              Reiniciar
+            </button>
+          )}
+        </div>
+      </article>
+    )
+  }
+
+  /* ── Finished screen ── */
   if (finished) {
     const pct = Math.round((score / total) * 100)
     return (
-      <article className="mx-auto max-w-[640px] px-8 py-20 md:px-12 md:py-28">
+      <article className="mx-auto max-w-[1000px] px-5 py-10 md:px-12 md:py-20">
         <div className="mb-4 text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
           Quiz · {quiz.label}
         </div>
@@ -121,20 +205,26 @@ export function QuizPage({ quiz }: QuizPageProps) {
           </div>
         </div>
 
-        <div className="mt-8 flex gap-3">
+        <div className="mt-8 flex flex-wrap gap-3">
+          <button
+            onClick={() => setBrowsing(true)}
+            className="rounded-md border border-[var(--color-line)] px-4 py-2 text-[14px] text-[var(--color-fg-muted)] transition-colors hover:border-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+          >
+            Ver preguntas
+          </button>
           <button
             onClick={handleRestart}
             className="rounded-md border border-[var(--color-line)] px-4 py-2 text-[14px] text-[var(--color-fg-muted)] transition-colors hover:border-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
           >
             Reintentar
           </button>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {allQuizzes
               .filter((q) => q.id !== quiz.id)
               .map((q) => (
                 <button
                   key={q.id}
-                  onClick={() => navigate(`quiz/${q.id}`)}
+                  onClick={() => router.push(`/quiz/${q.id}`)}
                   className="rounded-md border border-[var(--color-line)] px-4 py-2 text-[14px] text-[var(--color-fg-muted)] transition-colors hover:border-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
                 >
                   {q.label}
@@ -146,15 +236,24 @@ export function QuizPage({ quiz }: QuizPageProps) {
     )
   }
 
+  /* ── Active quiz ── */
   return (
-    <article className="mx-auto max-w-[640px] px-8 py-20 md:px-12 md:py-28">
+    <article className="mx-auto max-w-[1000px] px-5 py-10 md:px-12 md:py-20">
       <div className="mb-4 flex items-center justify-between">
         <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
           Quiz · {quiz.label}
         </span>
-        <span className="font-mono text-[12px] text-[var(--color-fg-dim)]">
-          {currentIndex + 1} / {total}
-        </span>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setBrowsing(true)}
+            className="text-[11px] text-[var(--color-fg-faint)] transition-colors hover:text-[var(--color-fg-muted)]"
+          >
+            Ver preguntas
+          </button>
+          <span className="font-mono text-[12px] text-[var(--color-fg-dim)]">
+            {currentIndex + 1} / {total}
+          </span>
+        </div>
       </div>
 
       {/* Progress bar */}

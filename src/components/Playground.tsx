@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
   SandpackProvider,
@@ -215,7 +217,7 @@ export function Playground({
   useEffect(() => {
     if (!maximized) { setEditorHeight(height); return }
 
-    const updateHeight = () => setEditorHeight(window.innerHeight - 64)
+    const updateHeight = () => setEditorHeight(window.innerHeight - 48 - 40 - 64)
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMaximized(false) }
 
     updateHeight()
@@ -238,7 +240,7 @@ export function Playground({
   )
 
   return (
-    <div className={maximized ? "fixed inset-0 z-50 flex flex-col bg-[var(--color-bg)] p-4" : "relative my-2"}>
+    <div className={maximized ? "fixed top-12 bottom-10 left-0 right-0 z-50 md:left-[240px] flex flex-col bg-[var(--color-bg)] p-4" : "relative my-2"}>
       <div className="mb-1.5 flex items-center justify-end">
         <button
           onClick={() => setMaximized((v) => !v)}

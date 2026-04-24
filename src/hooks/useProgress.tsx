@@ -1,7 +1,10 @@
+"use client"
+
 import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
   useMemo,
   type ReactNode,
@@ -47,7 +50,11 @@ interface ProgressCtx {
 const Ctx = createContext<ProgressCtx | null>(null)
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<ProgressData>(load)
+  const [data, setData] = useState<ProgressData>(empty)
+
+  useEffect(() => {
+    setData(load())
+  }, [])
 
   const markConceptVisited = useCallback((id: string) => {
     setData((prev) => {
