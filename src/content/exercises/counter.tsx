@@ -57,7 +57,7 @@ export default function App() {
       <p style={{ fontSize: 48, margin: 0, textAlign: "center" }}>{count}</p>
       <div style={{ display: "flex", gap: 8, marginTop: 16, justifyContent: "center" }}>
         <button onClick={() => setCount((c) => c + 1)}>+</button>
-        <button onClick={() => setCount((c) => c - 1)}>−</button>
+        <button onClick={() => setCount((c) => c > 0 ? c - 1 : 0)}>−</button>
         <button onClick={() => setCount(0)}>reset</button>
         <button onClick={plusThree}>+3</button>
       </div>
