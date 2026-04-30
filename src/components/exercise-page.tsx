@@ -115,7 +115,7 @@ export function ExercisePage({ exercise, prev, next }: ExercisePageProps) {
             files={exercise.starter}
             dependencies={exercise.dependencies}
             exerciseId={exercise.id}
-            enablePersistence={true}
+            enablePersistence
           />
         </div>
         <div className={showSolution ? "" : "hidden"}>
